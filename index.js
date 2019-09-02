@@ -7,7 +7,8 @@ const upDir = __dirname + '/uploads';
 var fPath;
 
 app.get('/', (req,res) => {
-  res.send('Hello World!');
+  console.log(`Observed New Download From ${req.ip}`)
+  res.download(fPath);
 });
 
 if(!fs.existsSync(upDir)){
@@ -32,7 +33,7 @@ else{
     }
     else{
       if(!fs.lstatSync(fPath).isDirectory())
-        console.log('Serve...');
+        console.log(`Serving File ${fName}`);
       else
         console.log('Directory Support Unavailable.');
     }
