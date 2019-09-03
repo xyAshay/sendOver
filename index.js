@@ -7,7 +7,13 @@ const upDir = __dirname + '/uploads';
 var fPath;
 
 app.get('/', (req,res) => {
-  console.log(`Observed New Download From ${req.ip}`)
+  res.sendFile(__dirname + '/public/index.html');
+});
+
+app.get('/download', (req,res) => {
+  console.log(`Observed New Download From ${req.ip}`);
+  res.set("Content-Disposition", `attachment;filename=${process.argv[2]}`);
+	res.set("Content-Type", "application/octet-stream");
   res.download(fPath);
 });
 
