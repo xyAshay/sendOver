@@ -1,21 +1,50 @@
 const express = require('express');
 const fs = require('fs');
 const ip = require('ip');
+const archiver = require('archiver');
 
 const app = express();
 const upDir = __dirname + '/uploads';
-var fPath;
 
 app.get('/', (req,res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
 
-app.get('/download', (req,res) => {
+const initListener = () => {
+  app.listen(3000,ip.address(), () => {
+    console.log(`Server Listening On http://${ip.address()}:3000`);
+  });
+}
+
+const sendOverStream = (url,ident) => {
+  initListener();
+  app.get('/download', (req,res) => {
   console.log(`Observed New Download From ${req.ip}`);
-  res.set("Content-Disposition", `attachment;filename=${process.argv[2]}`);
-	res.set("Content-Type", "application/octet-stream");
-  res.download(fPath);
-});
+  res.set("Content-Disposition", `attachment;filename=${ident}`);
+  res.set("Content-Type", "application/octet-stream");
+  res.download(url);
+  });
+}
+
+const handleDir = (dName) =>{
+  if(fs.existsSync(__dirname + '/uploads/sendOverFiles.zip'))
+    fs.unlinkSync(__dirname + '/uploads/sendOverFiles.zip');
+
+  const target = fs.createWriteStream(__dirname + '/uploads/sendOverFiles.zip');
+  const archive = archiver('zip',{ zlib: { level: 1 } });
+  target.on('close', () => {
+     console.log(archive.pointer() + ' total bytes');
+     console.log('Finalized ');
+  });
+  archive.on('error', (err) => {
+     throw err;
+  });
+  archive.pipe(target);
+  archive.directory(upDir+'/'+dName, dName, { date: new Date() });
+  archive.finalize();
+
+  sendOverStream(upDir+'/'+'sendOverFiles.zip');
+}
 
 if(!fs.existsSync(upDir)){
   fs.mkdir(upDir, (err) => {
@@ -32,19 +61,12 @@ else{
   }
   else{
     const fName = process.argv[2];
-    fPath = upDir +'/'+ fName;
+    const fPath = upDir +'/'+ fName;
     if(!fs.existsSync(fPath)){
       console.log('File Does Not Exist!');
       process.exit();
     }
-    else{
-      if(!fs.lstatSync(fPath).isDirectory())
-        console.log(`Serving File ${fName}`);
-      else
-        console.log('Directory Support Unavailable.');
-    }
-    app.listen(3000,ip.address(), () => {
-    console.log(`Server Listening On http://${ip.address()}:3000`);
-    });
+    else
+      fs.lstatSync(fPath).isDirectory() ? handleDir(fName) : sendOverStream(fPath,fName);
   }
 }
