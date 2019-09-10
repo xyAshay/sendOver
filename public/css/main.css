@@ -1,0 +1,28 @@
+html,body {
+    height: 100%;
+}
+
+body{
+    background: #007bff;
+    background: linear-gradient(to right, #0062E6, #33AEFF);
+    display:flex;
+    align-items:center;
+}
+
+.card{
+    background-color: #333;
+}
+
+.container{
+    flex: 1 0 auto;
+}
+
+#sticky-footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+/*
+24/1/1961
+1/7/1972 */

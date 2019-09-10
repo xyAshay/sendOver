@@ -5,6 +5,7 @@ const archiver = require('archiver');
 
 const app = express();
 const upDir = __dirname + '/uploads';
+app.use(express.static(__dirname + '/public'));
 
 app.get('/', (req,res) => {
   res.sendFile(__dirname + '/public/index.html');
@@ -27,10 +28,10 @@ const sendOverStream = (url,ident) => {
 }
 
 const handleDir = (dName) =>{
-  if(fs.existsSync(__dirname + '/uploads/sendOverFiles.zip'))
-    fs.unlinkSync(__dirname + '/uploads/sendOverFiles.zip');
+  if(fs.existsSync(upDir + '/sendOverFiles.zip'))
+    fs.unlinkSync(upDir + '/sendOverFiles.zip');
 
-  const target = fs.createWriteStream(__dirname + '/uploads/sendOverFiles.zip');
+  const target = fs.createWriteStream(upDir + '/sendOverFiles.zip');
   const archive = archiver('zip',{ zlib: { level: 1 } });
   target.on('close', () => {
      console.log(archive.pointer() + ' total bytes');
