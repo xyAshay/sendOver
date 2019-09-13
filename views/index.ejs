@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>SendOver</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="./css/main.css" />
+        </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="collapse navbar-collapse w-100 order-1 order-lg-0">
+            </div>
+            <div class="d-flex w-100 order-0">
+                <div class="w-50"></div>
+                <a href="https://github.com/xyAshay/sendOver"><img src="log.png" class="navbar-brand mw-100"></a>
+                <span class="w-50"></span>
+            </div>
+            <span class="w-100"></span>
+        </nav>
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto text-center">
+              <div class="card my-5 bg-light mb-3">
+                <div class="card-header text-center">FileName : <%= ident%> (<%= size%> MB)</div>
+                <div class="card-body">
+                  <img src="qr.png" alt="qr-Code" class="mx-auto d-block">
+                  <hr>
+                  <p>OR</p>
+                  <a href="/download" class="btn btn-outline-primary">Click To Download</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer id="sticky-footer" class="py-2 bg-dark text-white-50">
+            <div class="container text-center">
+              <small>Buy Me A Coffee <a href="https://github.com/xyAshay">@xyAshay</a></small>
+            </div>
+        </footer>
+    </body>
+</html>

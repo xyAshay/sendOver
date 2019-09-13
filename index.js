@@ -2,28 +2,34 @@ const express = require('express');
 const fs = require('fs');
 const ip = require('ip');
 const archiver = require('archiver');
+const qr = require('qr-image');
 
 const app = express();
 const upDir = __dirname + '/uploads';
+const port = 3000;
+
 app.use(express.static(__dirname + '/public'));
+app.set('view engine', 'ejs');
 
-app.get('/', (req,res) => {
-  res.sendFile(__dirname + '/public/index.html');
-});
+const initListener = (ident,len) => {
+  app.get('/', (req,res) => {
+    res.render('index',{ident : ident,size : Number(len*0.00000095367432).toFixed(2)});
+  });
 
-const initListener = () => {
-  app.listen(3000,ip.address(), () => {
-    console.log(`Server Listening On http://${ip.address()}:3000`);
+  app.listen(port,ip.address(), () => {
+    console.log(`Server Listening On http://${ip.address()}:${port}`);
+    const img = qr.image(`http://${ip.address()}:${port}/download`, { type: 'png', size : 6, margin: 1 });
+    img.pipe(fs.createWriteStream('./public/qr.png'));
   });
 }
 
-const sendOverStream = (url,ident) => {
-  initListener();
+const sendOverStream = (url,ident,len) => {
+  initListener(ident,len);
   app.get('/download', (req,res) => {
-  console.log(`Observed New Download From ${req.ip}`);
-  res.set("Content-Disposition", `attachment;filename=${ident}`);
-  res.set("Content-Type", "application/octet-stream");
-  res.download(url);
+      console.log(`Observed New Download From ${req.ip}`);
+      res.set("Content-Disposition", `attachment;filename=${ident}`);
+      res.set("Content-Type", "application/octet-stream");
+      res.download(url);
   });
 }
 
@@ -34,8 +40,8 @@ const handleDir = (dName) =>{
   const target = fs.createWriteStream(upDir + '/sendOverFiles.zip');
   const archive = archiver('zip',{ zlib: { level: 1 } });
   target.on('close', () => {
-     console.log(archive.pointer() + ' total bytes');
-     console.log('Finalized ');
+     console.log(`Archived Contents Of ${dName} to Zip ${archive.pointer()} Bytes`);
+     sendOverStream(upDir+'/'+'sendOverFiles.zip',dName,fs.statSync(upDir+'/sendOverFiles.zip').size);
   });
   archive.on('error', (err) => {
      throw err;
@@ -43,8 +49,6 @@ const handleDir = (dName) =>{
   archive.pipe(target);
   archive.directory(upDir+'/'+dName, dName, { date: new Date() });
   archive.finalize();
-
-  sendOverStream(upDir+'/'+'sendOverFiles.zip');
 }
 
 if(!fs.existsSync(upDir)){
@@ -68,6 +72,6 @@ else{
       process.exit();
     }
     else
-      fs.lstatSync(fPath).isDirectory() ? handleDir(fName) : sendOverStream(fPath,fName);
+      fs.lstatSync(fPath).isDirectory() ? handleDir(fName) : sendOverStream(fPath,fName,fs.statSync(fPath).size);
   }
 }

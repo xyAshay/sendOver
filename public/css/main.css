@@ -5,7 +5,6 @@ html,body {
 body{
     background: #007bff;
     background: linear-gradient(to right, #0062E6, #33AEFF);
-    display:flex;
     align-items:center;
 }
 
@@ -23,6 +22,3 @@ body{
     bottom: 0;
     width: 100%;
 }
-/*
-24/1/1961
-1/7/1972 */
