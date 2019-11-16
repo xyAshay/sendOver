@@ -11,7 +11,7 @@ var argv = require('yargs')
     .demandOption('file',"Specify File(with .extension) / Folder Name")
     .alias('f', 'file')
     .help('h')
-    .default('port',3000,"Set Traget Port")
+    .default('port',3000)
     .alias('p', 'port')
     .argv;
 
