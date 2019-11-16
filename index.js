@@ -6,7 +6,14 @@ const qr = require('qr-image');
 
 const app = express();
 const upDir = __dirname + '/uploads';
-const port = 3000;
+var argv = require('yargs')
+    .usage('Usage: $0 -file [fileName.txt or foldername]')
+    .demandOption('file',"Specify File(with .extension) / Folder Name")
+    .alias('f', 'file')
+    .help('h')
+    .default('port',3000,"Set Traget Port")
+    .alias('p', 'port')
+    .argv;
 
 app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
@@ -16,9 +23,9 @@ const initListener = (ident,len) => {
     res.render('index',{ident : ident,size : Number(len*0.00000095367432).toFixed(2)});
   });
 
-  app.listen(port,ip.address(), () => {
-    console.log(`Server Listening On http://${ip.address()}:${port}`);
-    const img = qr.image(`http://${ip.address()}:${port}/download`, { type: 'png', size : 6, margin: 1 });
+  app.listen(argv.port,ip.address(), () => {
+    console.log(`Server Listening On http://${ip.address()}:${argv.port}`);
+    const img = qr.image(`http://${ip.address()}:${argv.port}/download`, { type: 'png', size : 6, margin: 1 });
     img.pipe(fs.createWriteStream('./public/qr.png'));
   });
 }
@@ -60,18 +67,12 @@ if(!fs.existsSync(upDir)){
   process.exit();
 }
 else{
-  if(process.argv.length < 3){
-    console.log('Invalid Arguments Check Usage.');
-    console.log('Usage : Node index.js fileName.txt');
+  const fName = argv.f;
+  const fPath = upDir +'/'+ fName;
+  if(!fs.existsSync(fPath)){
+    console.log('File Does Not Exist!');
+    process.exit();
   }
-  else{
-    const fName = process.argv[2];
-    const fPath = upDir +'/'+ fName;
-    if(!fs.existsSync(fPath)){
-      console.log('File Does Not Exist!');
-      process.exit();
-    }
-    else
-      fs.lstatSync(fPath).isDirectory() ? handleDir(fName) : sendOverStream(fPath,fName,fs.statSync(fPath).size);
-  }
+  else
+    fs.lstatSync(fPath).isDirectory() ? handleDir(fName) : sendOverStream(fPath,fName,fs.statSync(fPath).size);
 }
