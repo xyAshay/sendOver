@@ -4,7 +4,7 @@
 A simple web utility written in NodeJS to send files to devices within the same network.
 
 # Usage
-To install the dependancies run :
+To install the dependencies run :
 ```bash
 npm i OR yarn install 
 ```
