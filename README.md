@@ -1,7 +1,9 @@
-# SendOver
-![logo](public/log.png)
+<h1 align='center'>SendOver</h1>
 
-A simple web utility written in NodeJS to send files to devices within the same network.
+<p align='center'>
+     <img src="public/log.png">
+</p>
+<h4 align='center'>A simple web utility written in NodeJS for inter-network cross platform data transfer.</h4>
 
 # Usage
 To install the dependencies run :
